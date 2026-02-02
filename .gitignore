@@ -3,4 +3,4 @@ __pycache__/
 data/
 *.mp3
 *.wav
-voice_detector.pkl
+
