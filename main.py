@@ -6,9 +6,8 @@ import joblib
 import numpy as np
 import os
 
-# --------------------
+
 # App Initialization
-# --------------------
 app = FastAPI()
 
 API_KEY = os.getenv("API_KEY", "sk_test_123456789")
@@ -21,44 +20,42 @@ except:
     model = None
     print("Model file not found")
 
-# --------------------
 # Request Schema
-# --------------------
+
 class VoiceRequest(BaseModel):
     language: str
     audioFormat: str
     audioBase64: str
 
-# --------------------
+
 # API Endpoint
-# --------------------
 @app.post("/api/voice-detection")
 def detect_voice(
     req: VoiceRequest,
     x_api_key: str = Header(...)
 ):
-    # 1️⃣ API Key validation
+    # API Key validation
     if x_api_key != API_KEY:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
-    # 2️⃣ Language validation
+    #  Language validation
     if req.language.lower() not in SUPPORTED_LANGUAGES:
         raise HTTPException(
             status_code=400,
             detail="English and Hindi language is supported yet."
         )
 
-    # 3️⃣ Audio format check
+    # Audio format check
     if req.audioFormat.lower() != "mp3":
         raise HTTPException(status_code=400, detail="Only MP3 allowed")
 
-    # 4️⃣ Decode Base64 audio
+    # Decode Base64 audio
     try:
         audio_bytes = base64.b64decode(req.audioBase64)
     except:
         raise HTTPException(status_code=400, detail="Invalid Base64 audio")
 
-    # 5️⃣ Save temporary MP3 file & extract features
+    #  Save temporary MP3 file & extract features
     with tempfile.NamedTemporaryFile(delete=True, suffix=".mp3") as tmp:
         tmp.write(audio_bytes)
         tmp.flush()
@@ -66,7 +63,7 @@ def detect_voice(
         from audio_features import extract_audio_features
         features = extract_audio_features(tmp.name)
 
-    # 6️⃣ Model prediction
+    # Model prediction
     if model is None:
         raise HTTPException(status_code=500, detail="Model not loaded")
 
@@ -81,7 +78,7 @@ def detect_voice(
     else:
         explanation = "Detected natural pitch fluctuations and human-like energy variation"
 
-    # 7️⃣ Response
+    #  Response
     return {
         "status": "success",
         "language": req.language,

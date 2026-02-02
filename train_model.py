@@ -21,7 +21,7 @@ def load_data(folder, label):
                 except Exception as e:
                     print("Error processing:", path, e)
 
-# 0 = HUMAN, 1 = AI
+
 load_data("data/human", 0)
 load_data("data/ai", 1)
 
@@ -30,7 +30,7 @@ y = np.array(y)
 
 print("Total samples:", len(X))
 
-# ✅ Pipeline: Scaling + Classifier
+#  Pipeline: Scaling + Classifier
 model = Pipeline([
     ("scaler", StandardScaler()),
     ("clf", LogisticRegression(
@@ -42,4 +42,4 @@ model = Pipeline([
 model.fit(X, y)
 
 joblib.dump(model, "voice_detector.pkl")
-print("✅ Model trained and saved")
+print("Model trained and saved successfully.")
